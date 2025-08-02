@@ -1,5 +1,5 @@
 import {navLinks} from "../../constants/index.js";
-import {useGSAP} from "@gsap/react";ű
+import {useGSAP} from "@gsap/react";
 import {gsap} from "gsap";
 
 function Navbar(props) {
