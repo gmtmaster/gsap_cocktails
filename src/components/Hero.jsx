@@ -1,11 +1,18 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {useGSAP} from "@gsap/react";
-import { SplitText} from "gsap/all";
+import { SplitText } from "gsap/all";
 import {gsap} from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {useMediaQuery} from "react-responsive";
 
+gsap.registerPlugin(ScrollTrigger);
 
 function Hero(props) {
+    const videoRef = useRef(null);
+    const isMobile = useMediaQuery({maxWidth: 767});
+
     useGSAP(()=> {
+
         const heroSplit = new SplitText('.title', { type: 'chars, words'});
         const paragraphSplit = new SplitText('.subtitle', { type: 'lines'});
 
@@ -37,6 +44,27 @@ function Hero(props) {
         })
             .to('.right-leaf', {y: 200}, 0)
             .to('.left-leaf', {y: -200}, 0)
+
+        const startValue = isMobile ? 'top 50%' : 'center 60%';
+        const endValue = isMobile ? '120% top' : 'bottom top';
+
+        const tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: 'video',
+                        start: startValue,
+                        end: endValue,
+                        scrub: true,
+                        pin: true,
+                        markers: false,
+                    }
+                });
+
+            videoRef.current.onloadedmetadata = () => {
+               tl.to(videoRef.current, {
+                    currentTime: videoRef.current.duration
+                })
+            }
+
     }, []);
 
     return (
@@ -56,16 +84,16 @@ function Hero(props) {
             />
 
             <div className="body">
-                <div className={"content"}>
-                    <div className={"space-y-5 hidden md:block"}>
+                <div className="content">
+                    <div className="space-y-5 hidden md:block">
                         <p>Cool. Crisp. Classic.</p>
-                        <p className={"subtitle"}>
+                        <p className="subtitle">
                             Sip the Spirit <br/> of Summer
                         </p>
                     </div>
 
-                    <div className={"view-cocktails"}>
-                        <p className={"subtitle"}>
+                    <div className="view-cocktails">
+                        <p className="subtitle">
                             Every cocktail we serve is a reflection of our obsession with detail - from the first muddle to the final garnish. That care is what turns a simple drink into something truly memorable.
                         </p>
                         <a href="#cocktails">View Cocktails</a>
@@ -74,6 +102,18 @@ function Hero(props) {
                 </div>
             </div>
         </section>
+
+            <div className="video absolute inset-0">
+                <video  ref={videoRef}
+                        src="/videos/output.mp4"
+                        muted
+                        playsInline
+                        preload="auto"
+                />
+
+
+
+            </div>
         </>
     );
 }
